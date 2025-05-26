@@ -1,15 +1,11 @@
 <?php
 
-namespace DanielGausi\CalendarEditorBundle\Services;
+namespace Pdir\CalendarEditorBundle\Services;
 
 use Contao\FrontendUser;
 use Contao\MemberModel;
 use Contao\StringUtil;
-use function DanielGausi\CalendarEditorBundle\EventIsNotElapsed;
-use function DanielGausi\CalendarEditorBundle\EventIsNotElapsed2;
-use function DanielGausi\CalendarEditorBundle\MidnightTime;
-use function DanielGausi\CalendarEditorBundle\UserIsAdmin;
-use function DanielGausi\CalendarEditorBundle\UserIsAuthorizedUser;
+use Contao\System;
 
 class CheckAuthService
 {
@@ -24,7 +20,7 @@ class CheckAuthService
             return true;
         }
 
-        if (FE_USER_LOGGED_IN) {
+        if (System::getContainer()->get('security.helper')->isGranted('ROLE_MEMBER')) {
             // Admins are authorized as well ;-)
             if ($this->isUserAdmin($calendar, $user)) {
                 return true;
@@ -47,7 +43,7 @@ class CheckAuthService
             return false;
         }
 
-        if (FE_USER_LOGGED_IN) {
+        if (System::getContainer()->get('security.helper')->isGranted('ROLE_MEMBER')) {
             // Get Admin-Groups which are allowed to edit events in this calendar
             // (Admins are allowed to edit events even if the "only owner"-setting is checked)
             // (Admins are allowed to add events on elapsed days)
@@ -90,7 +86,7 @@ class CheckAuthService
                 // Allow only if the User belongs to an authorized Member group
                 && ($isUserMember)
                 // Allow only if FE User is logged in or the calendar does not requie login
-                && (FE_USER_LOGGED_IN || !$calendar->caledit_loginRequired)
+                && (System::getContainer()->get('security.helper')->isGranted('ROLE_MEMBER') || !$calendar->caledit_loginRequired)
                 // Allow only if CalendarEditing is not restricted to future events -OR- EventTime is later then CurrentTime,
                 // && ((!$objCalendar->caledit_onlyFuture) ||  ($currentTime <= $aEvent['startTime']) )
 
@@ -117,7 +113,7 @@ class CheckAuthService
                 // Allow only if the User belongs to an authorized Member group
                 && ($isUserMember)
                 // Allow only if FE User is logged in or the calendar does not requie login
-                && (FE_USER_LOGGED_IN || !$calendar->caledit_loginRequired)
+                && (System::getContainer()->get('security.helper')->isGranted('ROLE_MEMBER') || !$calendar->caledit_loginRequired)
                 // Allow only if CalendarEditing is not restricted to future events -OR- EventTime is later then CurrentTime,
                 //&& ((!$objCalendar->caledit_onlyFuture) ||  (time() <= $objEvent->startTime) )
                 && ((!$calendar->caledit_onlyFuture) || (EventIsNotElapsed2($event)))

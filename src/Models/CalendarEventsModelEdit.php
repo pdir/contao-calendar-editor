@@ -1,11 +1,11 @@
 <?php
 
-namespace DanielGausi\CalendarEditorBundle\Models;
+namespace Pdir\CalendarEditorBundle\Models;
 
 use Contao\CalendarEventsModel;
-use Date;
+use Contao\Date;
 
-class CalendarEventsModelEdit extends \CalendarEventsModel
+class CalendarEventsModelEdit extends CalendarEventsModel
 {
     public static function findByIdOrAlias($ids, array $options = []): ?CalendarEventsModel
     {
@@ -14,10 +14,9 @@ class CalendarEventsModelEdit extends \CalendarEventsModel
 
         if (!static::isPreviewMode($options)) {
             $time = Date::floorToMinute();
-            $arrColumns[] = "($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'" . ($time + 60) . "')";
+            $arrColumns[] = "($t.start='' OR $t.start<=".$time.") AND ($t.stop='' OR $t.stop>" . ($time + 60) . ")";
         }
 
         return static::findOneBy($arrColumns, $ids, $options);
     }
-
 }

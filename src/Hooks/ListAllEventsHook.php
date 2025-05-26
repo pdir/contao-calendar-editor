@@ -1,11 +1,13 @@
 <?php
 
-namespace DanielGausi\CalendarEditorBundle\Hooks;
+namespace Pdir\CalendarEditorBundle\Hooks;
 
+use Contao\PageModel;
+use Contao\FrontendUser;
 use Contao\System;
-use DanielGausi\CalendarEditorBundle\Models\CalendarModelEdit;
-use DanielGausi\CalendarEditorBundle\Services\CheckAuthService;
-use Frontend;
+use Pdir\CalendarEditorBundle\Models\CalendarModelEdit;
+use Pdir\CalendarEditorBundle\Services\CheckAuthService;
+use Contao\Frontend;
 
 class ListAllEventsHook extends Frontend
 {
@@ -27,12 +29,12 @@ class ListAllEventsHook extends Frontend
             return $events;
         }
 
-        $this->import('FrontendUser', 'User');
+        $this->import(FrontendUser::class, 'User');
 
         /** @var CheckAuthService $checkAuthService */
         $checkAuthService = System::getContainer()->get('caledit.service.auth');
 
-        // preperations: Get more information about the calendars used for these "all events"
+        // preparations: Get more information about the calendars used for these "all events"
         $calendarObjects = [];            // needed for a detailed authorization check
         $isUserAdminForCalendar = [];  //
         $isUserMemberForCalendar = []; //
@@ -54,8 +56,10 @@ class ListAllEventsHook extends Frontend
                 $page = $this->Database->prepare("SELECT * FROM tl_page WHERE id=(SELECT caledit_jumpTo FROM tl_calendar WHERE id=?)")
                     ->limit(1)
                     ->execute($calendarModel->id);
+
                 if ($page->numRows === 1) {
-                    $jumpPages[$currentPid] = $this->generateFrontendUrl($page->row(), '');
+                    $readerPage = PageModel::findOneById($page->id);
+                    $jumpPages[$currentPid] = $readerPage->getFrontendUrl();
                 }
             } else {
                 // no editing allowed in this calendar
