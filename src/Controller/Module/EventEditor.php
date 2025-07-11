@@ -219,7 +219,7 @@ class EventEditor extends Events
             return false;
         }
 
-        // check calendar settings 
+        // check calendar settings
         if ($checkAuthService->isUserAuthorized($objCalendar, $user)) {
             // if the editing is disabled in the BE: Deny editing in the FE
             if ($currentObjectData->disable_editing) {
@@ -256,12 +256,9 @@ class EventEditor extends Events
         switch ($userSetting) {
             case "":
                 // Get current "jumpTo" page
-                $objPage = $this->Database->prepare("SELECT * FROM tl_page WHERE id=?")
-                    ->limit(1)
-                    ->execute($this->jumpTo);
-
-                if ($objPage->numRows) {
-                    $jumpTo = PageModel::getFrontendUrl($objPage->row());
+                $objPage = PageModel::findByPk($this->jumpTo);
+                if (null !== $objPage) {
+                    $jumpTo = $objPage->getFrontendUrl();
                 }
                 break;
 
@@ -478,7 +475,6 @@ class EventEditor extends Events
 
         $endTime = new Date($dateString, $GLOBALS['TL_CONFIG']['datimFormat']);
         $eventData['endTime'] = $endTime->tstamp;
-
 
         // here: CALL Hooks with $eventData
         if (array_key_exists('prepareCalendarEditData', $GLOBALS['TL_HOOKS']) && is_array($GLOBALS['TL_HOOKS']['prepareCalendarEditData'])) {
@@ -834,9 +830,25 @@ class EventEditor extends Events
             }
 
             $objWidget = new $strClass(Widget::getAttributesFromDca($field, $field['name'], $field['value']?? ''));
+
             // Validate widget
             if (Input::post('FORM_SUBMIT') == 'caledit_submit') {
                 $objWidget->validate();
+
+                // Set uuids for upload fiselds
+                if ('Contao\FormUpload' === $objWidget::class && isset($objWidget->value['uuid'])) {
+                    $newEventData[$objWidget->name] = $objWidget->value['uuid'];
+
+                    if ('singleSRC' === $objWidget->name) {
+                        $newEventData[$objWidget->name] = StringUtil::uuidToBin($newEventData[$objWidget->name]);
+                        $newEventData['addImage'] = 1;
+                    }
+
+                    if ('enclosure' === $objWidget->name) {
+                        $newEventData['addEnclosure'] = 1;
+                    }
+                }
+
                 if ($objWidget->hasErrors()) {
                     $doNotSubmit = true;
                 }
@@ -845,7 +857,6 @@ class EventEditor extends Events
         }
         $arrWidgets['startDate']->parse();
         $arrWidgets['endDate']->parse();
-
 
         // Check, whether the user is allowed to edit past events
         // or the date is in the future
@@ -1275,7 +1286,7 @@ class EventEditor extends Events
             $notification->subject = sprintf($GLOBALS['TL_LANG']['MSC']['caledit_MailSubjectNew'], $host);
         }
 
-        $arrRecipients = trimsplit(',', $this->caledit_mailRecipient);
+        $arrRecipients = StringUtil::trimsplit(',', $this->caledit_mailRecipient);
         $mText = $GLOBALS['TL_LANG']['MSC']['caledit_MailEventdata'] . " \n\n";
         if (!System::getContainer()->get('security.helper')->isGranted('ROLE_MEMBER')) {
             $mText .= $GLOBALS['TL_LANG']['MSC']['caledit_MailUnregisteredUser'] . " \n";
