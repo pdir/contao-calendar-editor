@@ -159,5 +159,3 @@ class HiddenEventlist extends ModuleEventlist
         parent::compile();
     }
 }
-
-?>
