@@ -1,10 +1,13 @@
-# Contao-CalendarEditor
+# Contao Calendar Editor
 
-This is a revision of the module for Contao 3. Essentially, everything should run as it did in Contao 3. The only change is the direct integration of the extension "CalendarField", which allows the use of a jQuery calendar for date fields.
+> Updated version for Contao 4.13 and Contao 5.3 and higher based on https://github.com/Wusch/contao-calendar-editor and https://github.com/Diversworld/Contao-CalendarEditor
+
+This is a revision of the module for Contao 3. Essentially, everything should run as it did in Contao 3. The only change
+is the direct integration of the extension "CalendarField", which allows the use of a jQuery calendar for date fields.
 
 ## Features
 
-New settings in the Contao Calender: Enable Frontend editing
+New settings in the Contao Calendar: Enable Frontend editing
 * option: "Only future events", which disables editing of elapsed events
 * option: Login required (highly recommended on productive sites)
 * Define member groups for editing: "Members" and "Admins", which can edit all events (unless they are locked in the Backend, see below)
@@ -46,7 +49,7 @@ Should be placed on the site with the Eventreader module. Provides a proper edit
 
 ### The Calendar FE edit module
 
-Similar to the regular Contao Calendar, but with edit-Links and "add event"-Links for every day. As a bonus, a "Holiday Calendar" can be specified. Events from this calendar are shown in the day-header of the calender module, to mark some days as "holiday", or whatever.
+Similar to the regular Contao Calendar, but with edit-Links and "add event"-Links for every day. As a bonus, a "Holiday Calendar" can be specified. Events from this calendar are shown in the day-header of the calendar module, to mark some days as "holiday", or whatever.
 
 ## Usage
 
@@ -89,7 +92,7 @@ This module supports editing of events even for not registered users. In this ca
 
 Now it works like this:
 
-* By default the captcha is included (for non registered users), but extended with the built-in honeypot system from Contao. Therefore it is *not* shown to most users, but your calendar should still be protected against spam bots. If the user has disabled Javascript for your site, the captcha is shown.
+* By default the captcha is included (for non registered users), but extended with the built-in honeypot system from Contao. Therefore, it is *not* shown to most users, but your calendar should still be protected against spam bots. If the user has disabled Javascript for your site, the captcha is shown.
 * If the honeypot does not work for you, and you get a lot of spam entries, you can try to use the new editor template `eventEdit_ForceCaptcha.html5`. That way the captcha is always shown, but it may lead to a duplicate captcha field on the form in case the user answers it wrong, or Javascript is disabled.
 * You can modify the captcha field by editing the template `form_captcha_calendar-editor.html5` so it matches your modified editor template.
 * The Delete-Event template always present a captcha, even to registered users to prevent unintended deleting of events. On this form, it may also happen that the captcha field is duplicated.
@@ -98,6 +101,13 @@ Now it works like this:
 
 If you like this extension and think it's worth a little donation: You can support me via Paypal.Me:
 
-[Donation for CalendarEditor](https://paypal.me/CalendarEditor/10)
+[Donation for CalendarEditor](https://contao-themes.net/sponsoring/einzelne-entwicklungsstunde.html?nutzungsart=44)
 
 Thank You!
+
+## Dev
+
+```bash
+vendor/bin/ecs check src/ tests/ --fix
+vendor/bin/phpunit
+```
