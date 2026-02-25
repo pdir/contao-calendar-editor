@@ -431,7 +431,7 @@ class EventEditor extends Events
         if (trim($eventData['endDate']) != '') {
             // an enddate is given
             $endDateStr = $eventData['endDate'];
-            $endDate = new Date($eventData['endDate'], $GLOBALS['TL_CONFIG']['dateFormat']);
+            $endDate = new Date(date($GLOBALS['TL_CONFIG']['dateFormat'], strtotime($eventData['endDate'])), $GLOBALS['TL_CONFIG']['dateFormat']);
             $eventData['endDate'] = $endDate->tstamp;
         } else {
             // needed later
